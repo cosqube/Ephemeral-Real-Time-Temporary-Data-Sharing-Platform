@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chipku - Shared Paste Room</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Landing Page -->
+  <div id="landing-page" class="page active">
+    <div class="container landing-container">
+      <div class="logo">
+        <h1>📋 Chipku</h1>
+        <p class="tagline">Temporary shared paste rooms</p>
+      </div>
+      
+      <div class="action-buttons">
+        <button id="btn-create" class="btn btn-primary btn-large">
+          <span class="btn-icon">✨</span>
+          Create a Paste Room
+        </button>
+        <button id="btn-join" class="btn btn-secondary btn-large">
+          <span class="btn-icon">🔑</span>
+          Join a Paste Room
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Room Modal -->
+  <div id="create-modal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" id="create-modal-close">&times;</button>
+      <h2>Create a Paste Room</h2>
+      <div class="form-group">
+        <label for="room-name-input">Room Name (optional)</label>
+        <input type="text" id="room-name-input" placeholder="My Paste Room" maxlength="50">
+      </div>
+      <button id="btn-create-confirm" class="btn btn-primary">Create Room</button>
+    </div>
+  </div>
+
+  <!-- Join Room Modal -->
+  <div id="join-modal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" id="join-modal-close">&times;</button>
+      <h2>Join a Paste Room</h2>
+      <div class="form-group">
+        <label for="room-id-input">Room ID</label>
+        <input type="text" id="room-id-input" placeholder="ABC123" maxlength="6">
+      </div>
+      <p id="join-error" class="error-text"></p>
+      <button id="btn-join-confirm" class="btn btn-primary">Join Room</button>
+    </div>
+  </div>
+
+  <!-- Room Page -->
+  <div id="room-page" class="page">
+    <div class="room-container">
+      <!-- Room Header -->
+      <header class="room-header">
+        <div class="room-info">
+          <h2 id="room-name-display">Room Name</h2>
+          <div class="room-id-container">
+            <span class="room-id-label">Room ID:</span>
+            <span id="room-id-display" class="room-id">ABC123</span>
+            <button id="btn-copy-id" class="btn btn-small" title="Copy Room ID">📋</button>
+          </div>
+        </div>
+        <div class="room-meta">
+          <span id="user-count" class="user-count">👤 1 user</span>
+          <span id="user-label" class="user-label">You are User 1</span>
+        </div>
+        <button id="btn-leave" class="btn btn-danger">Leave Room</button>
+      </header>
+
+      <!-- Paste Feed -->
+      <main class="paste-feed-container">
+        <div id="paste-feed" class="paste-feed">
+          <div class="empty-state" id="empty-state">
+            <p>No pastes yet. Be the first to share something!</p>
+          </div>
+        </div>
+      </main>
+
+      <!-- Paste Input -->
+      <footer class="paste-input-container">
+        <textarea 
+          id="paste-input" 
+          placeholder="Paste or type something to share..."
+          rows="3"
+        ></textarea>
+        <button id="btn-send" class="btn btn-primary">Send</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

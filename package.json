@@ -1,0 +1,17 @@
+{
+  "name": "chipku",
+  "version": "1.0.0",
+  "description": "A temporary shared paste room that exists only while people are inside it",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["paste", "realtime", "websocket", "collaboration"],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "uuid": "^9.0.0",
+    "ws": "^8.14.2"
+  }
+}
