@@ -6,8 +6,9 @@ class ChipkuApp {
     this.roomId = null;
     this.roomName = null;
     this.reconnectAttempts = 0;
-    this.maxReconnectAttempts = 5;
-    this.reconnectDelay = 1000;
+    this.maxReconnectAttempts = 15;
+    this.reconnectDelay = 2000;
+    this.isConnecting = false;
 
     this.init();
   }
@@ -150,14 +151,32 @@ class ChipkuApp {
   // WebSocket Connection
   connect() {
     return new Promise((resolve, reject) => {
+      if (this.isConnecting) {
+        reject(new Error('Already connecting'));
+        return;
+      }
+      
+      this.isConnecting = true;
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const wsUrl = `${protocol}//${window.location.host}`;
+      
+      // Set a connection timeout for cold starts
+      const connectionTimeout = setTimeout(() => {
+        if (this.ws && this.ws.readyState === WebSocket.CONNECTING) {
+          this.ws.close();
+          this.isConnecting = false;
+          reject(new Error('Connection timeout'));
+        }
+      }, 30000); // 30 second timeout for cold starts
       
       this.ws = new WebSocket(wsUrl);
 
       this.ws.onopen = () => {
+        clearTimeout(connectionTimeout);
         console.log('WebSocket connected');
+        this.isConnecting = false;
         this.reconnectAttempts = 0;
+        this.hideConnectionStatus();
         resolve();
       };
 
@@ -174,19 +193,42 @@ class ChipkuApp {
       };
 
       this.ws.onerror = (error) => {
+        clearTimeout(connectionTimeout);
         console.error('WebSocket error:', error);
+        this.isConnecting = false;
         reject(error);
       };
     });
   }
 
+  showConnectionStatus(message) {
+    let statusEl = document.getElementById('connection-status');
+    if (!statusEl) {
+      statusEl = document.createElement('div');
+      statusEl.id = 'connection-status';
+      statusEl.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#ff9800;color:#000;padding:12px;text-align:center;z-index:9999;font-weight:500;';
+      document.body.prepend(statusEl);
+    }
+    statusEl.textContent = message;
+    statusEl.style.display = 'block';
+  }
+
+  hideConnectionStatus() {
+    const statusEl = document.getElementById('connection-status');
+    if (statusEl) {
+      statusEl.style.display = 'none';
+    }
+  }
+
   attemptReconnect() {
     this.reconnectAttempts++;
-    const delay = this.reconnectDelay * this.reconnectAttempts;
+    // Exponential backoff with max 10 seconds
+    const delay = Math.min(this.reconnectDelay * Math.pow(1.5, this.reconnectAttempts - 1), 10000);
     
-    this.showToast(`Connection lost. Reconnecting in ${delay/1000}s...`, 'error');
+    this.showConnectionStatus(`⏳ Server is waking up... Attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts} (retrying in ${Math.round(delay/1000)}s)`);
     
     setTimeout(async () => {
+      this.showConnectionStatus(`🔄 Connecting to server... Attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}`);
       try {
         await this.connect();
         // Rejoin the room
@@ -194,10 +236,12 @@ class ChipkuApp {
           type: 'join_room',
           roomId: this.roomId
         });
+        this.showToast('Reconnected successfully!', 'success');
       } catch (e) {
         if (this.reconnectAttempts < this.maxReconnectAttempts) {
           this.attemptReconnect();
         } else {
+          this.hideConnectionStatus();
           this.showToast('Failed to reconnect. Please refresh the page.', 'error');
         }
       }
@@ -236,13 +280,15 @@ class ChipkuApp {
   // Room Actions
   async createRoom() {
     try {
+      this.showConnectionStatus('🔄 Connecting to server... (this may take up to 30s if server is sleeping)');
       await this.connect();
       this.send({
         type: 'create_room',
         name: this.roomNameInput.value.trim()
       });
     } catch (e) {
-      this.showToast('Failed to connect to server', 'error');
+      this.hideConnectionStatus();
+      this.showToast('Failed to connect. The server might be waking up - please try again in a few seconds.', 'error');
     }
   }
 
@@ -258,13 +304,15 @@ class ChipkuApp {
 
   async joinRoomById(roomId) {
     try {
+      this.showConnectionStatus('🔄 Connecting to server... (this may take up to 30s if server is sleeping)');
       await this.connect();
       this.send({
         type: 'join_room',
         roomId: roomId
       });
     } catch (e) {
-      this.showToast('Failed to connect to server', 'error');
+      this.hideConnectionStatus();
+      this.showToast('Failed to connect. The server might be waking up - please try again in a few seconds.', 'error');
     }
   }
 
