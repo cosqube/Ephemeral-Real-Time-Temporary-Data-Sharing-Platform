@@ -1,15 +1,15 @@
-# 📋 Chipku - Temporary Shared Paste Rooms
+# Ephemeral – Real-Time Temporary Data Sharing Platform
 
 A real-time collaborative paste room that exists only while people are inside it.
 
-## ✨ Features
+## Features
 
 - **No login required** - Just create or join a room
 - **Real-time sync** - Pastes appear instantly for all users
 - **Ephemeral** - Room is deleted when the last user leaves
 - **Simple** - No file uploads, no history, no complexity
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 
@@ -30,7 +30,7 @@ npm start
 
 The server will start at `http://localhost:3000`
 
-## 🎯 How to Use
+##  How to Use
 
 1. **Create a Room**
    - Click "Create a Paste Room"
@@ -50,7 +50,7 @@ The server will start at `http://localhost:3000`
 4. **Copy Content**
    - Click any paste to copy it to your clipboard
 
-## 🧱 Architecture
+##  Architecture
 
 ```
 Chipku/
@@ -68,14 +68,14 @@ Chipku/
 - **Frontend**: Vanilla HTML/CSS/JavaScript
 - **Storage**: In-memory (no database)
 
-## 🔐 Abuse Protection
+##  Abuse Protection
 
 - Max paste size: 20 KB
 - Rate limit: 5 pastes per second per user
 - Max users per room: 20
 - Grace period: 10 seconds before room deletion (prevents accidental deletion on refresh)
 
-## 🧾 Room Lifecycle
+##  Room Lifecycle
 
 1. Room is created when a user clicks "Create a Paste Room"
 2. Room exists as long as at least 1 user is connected
@@ -84,7 +84,7 @@ Chipku/
    - If no one reconnects, the room is permanently deleted
    - All pastes, metadata, and user labels are gone forever
 
-## 📡 WebSocket Events
+## WebSocket Events
 
 ### Client → Server
 
@@ -106,7 +106,7 @@ Chipku/
 | `new_paste` | `{ paste }` | A new paste was shared |
 | `error` | `{ message }` | An error occurred |
 
-## 🌐 Deployment
+##  Deployment
 
 ### Environment Variables
 
